@@ -56,6 +56,52 @@ func ValidateNodeLabelArgs(args config.NodeLabelArgs) error {
 	return nil
 }
 
+// ValidateNodeResourcesArgs validates that NodeResourcesArgs are correct.
+func ValidateNodeResourcesArgs(args config.NodeResourcesArgs) error {
+	if args.Allocatable == nil && args.Allocated == nil && args.Available == nil && args.Requested == nil {
+		return fmt.Errorf("empty args")
+	}
+
+	if part := args.Allocatable; part != nil {
+		if err := validateNodeResourcesPartArgs(part); err != nil {
+			return fmt.Errorf("invalid allocatable args: %w", err)
+		}
+	}
+	if part := args.Allocated; part != nil {
+		if err := validateNodeResourcesPartArgs(part); err != nil {
+			return fmt.Errorf("invalid allocated args: %w", err)
+		}
+	}
+	if part := args.Available; part != nil {
+		if err := validateNodeResourcesPartArgs(part); err != nil {
+			return fmt.Errorf("invalid available args: %w", err)
+		}
+	}
+	if part := args.Requested; part != nil {
+		if err := validateNodeResourcesPartArgs(part); err != nil {
+			return fmt.Errorf("invalid requested args: %w", err)
+		}
+	}
+
+	return nil
+}
+
+func validateNodeResourcesPartArgs(args config.NodeResourcesPartArgs) error {
+	switch args.CountOn {
+	case config.CountOnAbsoluteValue, config.CountOnRatioToAllocatable, config.CountOnRatioToAvailable:
+	default:
+		return fmt.Errorf("countOn must be one of %s, %s or %s", config.CountOnAbsoluteValue, config.CountOnRatioToAllocatable, config.CountOnRatioToAvailable)
+	}
+
+	switch args.Prefer {
+	case config.PreferMost, config.PreferLeast:
+	default:
+		return fmt.Errorf("prefer must be one of %s or %s", config.PreferMost, config.PreferLeast)
+	}
+
+	return validateResources(args.Resources)
+}
+
 // validateNoConflict validates that presentLabels and absentLabels do not conflict.
 func validateNoConflict(presentLabels []string, absentLabels []string) error {
 	m := make(map[string]struct{}, len(presentLabels))
