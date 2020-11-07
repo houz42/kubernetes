@@ -72,6 +72,46 @@ type NodeLabelArgs struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
+type NodeResourcesArgs struct {
+	metav1.TypeMeta
+
+	// favours nodes based on their allocatable resources
+	Allocatable *NodeResourcesPartArgs
+	// favours nodes based on their resources already allocated
+	Allocated *NodeResourcesPartArgs
+	// favours nodes based on their available resources
+	Available *NodeResourcesPartArgs
+	// favours nodes based on (userally the ratio to nodes' allocatable/available resources of) resources requested by the pod
+	Requested *NodeResourcesPartArgs
+}
+
+type NodeResourcesPartArgs struct {
+	CountOn CountNodeResourceOn
+	Prefer  PreferNodeResource
+
+	// Resources to be considered when scoring.
+	// The default resource set includes "cpu" and "memory" with an equal weight.
+	// Allowed weights go from 1 to 100.
+	Resources []ResourceSpec
+}
+
+type CountNodeResourceOn string
+
+const (
+	CountOnAbsoluteValue      CountNodeResourceOn = "AbsoluteValue"
+	CountOnRatioToAllocatable CountNodeResourceOn = "RatioToAllocatable"
+	CountOnRatioToAvailable   CountNodeResourceOn = "RatioToAvailable"
+)
+
+type PreferNodeResource string
+
+const (
+	PreferMost  PreferNodeResource = "Most"
+	PreferLeast PreferNodeResource = "Least"
+)
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
 // NodeResourcesFitArgs holds arguments used to configure the NodeResourcesFit plugin.
 type NodeResourcesFitArgs struct {
 	metav1.TypeMeta
