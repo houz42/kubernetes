@@ -95,22 +95,22 @@ func ValidateNodeResourcesArgs(args config.NodeResourcesArgs) error {
 	}
 
 	if part := args.Allocatable; part != nil {
-		if err := validateNodeResourcesPartArgs(part); err != nil {
+		if err := validateNodeResourcesPartArgs(*part); err != nil {
 			return fmt.Errorf("invalid allocatable args: %w", err)
 		}
 	}
 	if part := args.Allocated; part != nil {
-		if err := validateNodeResourcesPartArgs(part); err != nil {
+		if err := validateNodeResourcesPartArgs(*part); err != nil {
 			return fmt.Errorf("invalid allocated args: %w", err)
 		}
 	}
 	if part := args.Available; part != nil {
-		if err := validateNodeResourcesPartArgs(part); err != nil {
+		if err := validateNodeResourcesPartArgs(*part); err != nil {
 			return fmt.Errorf("invalid available args: %w", err)
 		}
 	}
 	if part := args.Requested; part != nil {
-		if err := validateNodeResourcesPartArgs(part); err != nil {
+		if err := validateNodeResourcesPartArgs(*part); err != nil {
 			return fmt.Errorf("invalid requested args: %w", err)
 		}
 	}
